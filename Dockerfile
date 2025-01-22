@@ -47,8 +47,9 @@ RUN pip install -r requirements.txt
 WORKDIR /comfyui/was-node-suite-comfyui
 RUN pip install -r requirements.txt
 
+WORKDIR /comfyui
 RUN git lfs install
-RUN git clone https://huggingface.co/FunAudioLLM/CosyVoice2-0.5B
+RUN git clone https://huggingface.co/FunAudioLLM/CosyVoice2-0.5B.git  models/CosyVoice
 
 # Start container
 CMD ["/start.sh"]
