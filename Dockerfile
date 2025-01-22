@@ -12,12 +12,12 @@ ENV CMAKE_BUILD_PARALLEL_LEVEL=8
 ENV CUDA_HOME=/usr/local/cuda
 # Install Python, git and other necessary tools
 RUN apt-get update && apt-get install -y \
-    python3.10 \
+    python3.12 \
     python3-pip \
     git \
     wget \
     libgl1 \
-    && ln -sf /usr/bin/python3.10 /usr/bin/python \
+    && ln -sf /usr/bin/python3.12 /usr/bin/python \
     && ln -sf /usr/bin/pip3 /usr/bin/pip
 
 # Clean up to reduce image size
