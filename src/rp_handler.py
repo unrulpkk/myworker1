@@ -399,7 +399,7 @@ def process_output_images(outputs, job_id):
 
     # The image is in the output folder
     if os.path.exists(local_image_path):
-        if os.environ.get("BUCKET_ENDPOINT_URL", False):
+        if os.environ.get("BUCKET_ENDPOINT_URL", True):
             oss_file_path = f"{job_id}/{output_image}"
             # URL to image in AWS S3
             image = upload_to_aliyun(local_image_path, oss_file_path)
