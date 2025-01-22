@@ -42,9 +42,9 @@ RUN git clone https://github.com/zhilengjun/ComfyUI-FunAudioLLM_V2.git custom_no
 
 RUN git clone https://github.com/WASasquatch/was-node-suite-comfyui.git custom_nodes/was-node-suite-comfyui
 
-WORKDIR /comfyui/custom_nodesComfyUI-FunAudioLLM_V2
+WORKDIR /comfyui/custom_nodes/ComfyUI-FunAudioLLM_V2
 RUN pip install -r requirements.txt
-WORKDIR /comfyui/was-node-suite-comfyui
+WORKDIR /comfyui/custom_nodes/was-node-suite-comfyui
 RUN pip install -r requirements.txt
 
 WORKDIR /comfyui
