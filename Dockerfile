@@ -47,17 +47,8 @@ RUN pip install -r requirements.txt
 WORKDIR /comfyui/was-node-suite-comfyui
 RUN pip install -r requirements.txt
 
-# Stage 2: Download models
-FROM base as downloader
-
-ARG HUGGINGFACE_ACCESS_TOKEN
-ARG MODEL_TYPE
-
-# Change working directory to ComfyUI
-WORKDIR /comfyui
-pip install huggingface_hub
-# Download checkpoints/vae/LoRA to include in image based on model type
-RUN huggingface-cli download --repo-id FunAudioLLM/CosyVoice2-0.5B --local-dir /comfyui/models/CosyVoice --local-dir-use-symlinks false
+RUN git lfs install
+RUN git clone https://huggingface.co/FunAudioLLM/CosyVoice2-0.5B
 
 # Start container
 CMD ["/start.sh"]
