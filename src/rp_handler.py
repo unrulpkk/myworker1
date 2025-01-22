@@ -8,6 +8,7 @@ import os
 import requests
 import base64
 from io import BytesIO
+import oss2
 
 # Time to wait between API check attempts in milliseconds
 COMFY_API_AVAILABLE_INTERVAL_MS = 50
@@ -23,6 +24,30 @@ COMFY_HOST = "127.0.0.1:8188"
 # see https://docs.runpod.io/docs/handler-additional-controls#refresh-worker
 REFRESH_WORKER = os.environ.get("REFRESH_WORKER", "false").lower() == "true"
 
+# 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
+auth = oss2.Auth('LTAI5tJL5BUjYHHyKKmiRhyG', 'oH0ERlPRmajEucU5OhBleOwCsFFhoe')
+# Endpoint以杭州为例，其它Region请按实际情况填写。
+bucket = oss2.Bucket(auth, 'http://oss-cn-hangzhou.aliyuncs.com', 'comfyuiyihuan')
+
+def upload_to_aliyun(local_file_path, oss_file_path):
+    """
+    上传文件到阿里云OSS
+    :param local_file_path: 本地文件路径
+    :param oss_file_path: OSS目标文件路径
+    :return: 上传成功返回True，失败返回False
+    """
+    try:
+        result = bucket.put_object_from_file(oss_file_path, local_file_path)
+        # HTTP返回码。
+        if result.status == 200:
+            print(f"文件 {local_file_path} 成功上传到 {oss_file_path}")
+            return True
+        else:
+            print(f"文件上传失败，HTTP状态码: {result.status}")
+            return False
+    except Exception as e:
+        print(f"上传过程中出现错误: {e}")
+        return False
 
 def validate_input(job_input):
     """
@@ -375,8 +400,9 @@ def process_output_images(outputs, job_id):
     # The image is in the output folder
     if os.path.exists(local_image_path):
         if os.environ.get("BUCKET_ENDPOINT_URL", False):
+            oss_file_path = f"{job_id}/{output_image}"
             # URL to image in AWS S3
-            image = rp_upload.upload_image(job_id, local_image_path)
+            image = upload_to_aliyun(local_image_path, oss_file_path)
             print(
                 "runpod-worker-comfy - the image was generated and uploaded to AWS S3"
             )
