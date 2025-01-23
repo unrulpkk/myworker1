@@ -27,9 +27,11 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git /comfyui
 WORKDIR /comfyui
 
 RUN git clone https://github.com/zhilengjun/ComfyUI-FunAudioLLM_V2.git custom_nodes/ComfyUI-FunAudioLLM_V2
+
+RUN git clone https://github.com/WASasquatch/was-node-suite-comfyui.git custom_nodes/was-node-suite-comfyui
+
 WORKDIR /comfyui/custom_nodes/ComfyUI-FunAudioLLM_V2
 RUN pip install --no-cache-dir -r requirements.txt
-RUN git clone https://github.com/WASasquatch/was-node-suite-comfyui.git custom_nodes/was-node-suite-comfyui
 WORKDIR /comfyui/custom_nodes/was-node-suite-comfyui
 RUN pip install --no-cache-dir -r requirements.txt
 
