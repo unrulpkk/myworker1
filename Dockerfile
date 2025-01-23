@@ -1,8 +1,10 @@
 # Use Nvidia CUDA base image
 # FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04 AS base
-FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04 as base
+FROM nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04 as base
 # Install libGL.so.1
-
+ENV NCCL_DEBUG=INFO
+ENV NCCL_DEBUG_SUBSYS=ALL
+ENV NCCL_DEBUG_FILE=/nccl.log
 # Prevents prompts from packages asking for user input during installation
 ENV DEBIAN_FRONTEND=noninteractive
 # Prefer binary wheels over source distributions for faster pip installations
@@ -36,7 +38,7 @@ WORKDIR /comfyui/custom_nodes/was-node-suite-comfyui
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install ComfyUI dependencies
-RUN pip3 install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 \
+RUN pip3 install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 \
     && pip3 install --no-cache-dir xformers==0.0.21 \
     && pip3 install -r requirements.txt
 
