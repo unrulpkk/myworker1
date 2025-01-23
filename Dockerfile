@@ -52,7 +52,10 @@ WORKDIR /comfyui/custom_nodes/was-node-suite-comfyui
 RUN pip install --no-cache-dir -r requirements.txt
 
 WORKDIR /comfyui
-RUN git lfs install
+# 安装 git-lfs
+RUN apt-get update && \
+    apt-get install -y git-lfs && \
+    git lfs install
 RUN git clone https://huggingface.co/FunAudioLLM/CosyVoice2-0.5B.git  models/CosyVoice
 
 WORKDIR /comfyui/input
