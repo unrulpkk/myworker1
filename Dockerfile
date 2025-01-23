@@ -64,6 +64,8 @@ RUN wget https://comfyuiyihuan.oss-cn-hangzhou.aliyuncs.com/bd3d3f9b-ce6c-435e-9
 # Go back to the root
 WORKDIR /
 
+# Add the start and the handler
+ADD src/start.sh src/rp_handler.py test_input.json ./
 RUN chmod +x /start.sh
 
 # Start the container
