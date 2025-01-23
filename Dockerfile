@@ -36,7 +36,7 @@ WORKDIR /comfyui/custom_nodes/was-node-suite-comfyui
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install ComfyUI dependencies
-RUN pip3 install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 \
+RUN pip3 install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu181 \
     && pip3 install --no-cache-dir xformers==0.0.21 \
     && pip3 install -r requirements.txt
 
