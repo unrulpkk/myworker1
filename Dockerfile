@@ -2,17 +2,16 @@
 FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04 AS base
 #FROM nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04 as base
 # Install libGL.so.1
-ENV NCCL_DEBUG=INFO
-ENV NCCL_DEBUG_SUBSYS=ALL
-ENV NCCL_DEBUG_FILE=/nccl.log
 # Prevents prompts from packages asking for user input during installation
 ENV DEBIAN_FRONTEND=noninteractive
 # Prefer binary wheels over source distributions for faster pip installations
 ENV PIP_PREFER_BINARY=1
 # Ensures output from python is printed immediately to the terminal without buffering
 ENV PYTHONUNBUFFERED=1 
+#ENV CUDA_HOME=/usr/local/cuda
+#ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 ENV CUDA_HOME=/usr/local/cuda
-ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+ENV PATH=$CUDA_HOME/bin:$PATH
 # Install Python, git and other necessary tools
 RUN apt-get update && apt-get install -y \
     python3.10 \
