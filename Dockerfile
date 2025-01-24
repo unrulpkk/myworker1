@@ -15,11 +15,10 @@ ENV CUDA_HOME=/usr/local/cuda
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 # Install Python, git and other necessary tools
 RUN apt-get update && apt-get install -y \
-    python3.12 \
+    python3.10 \
     python3-pip \
     git \
     wget
-
 # Clean up to reduce image size
 # RUN apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 RUN apt-get update && apt-get install -y libgl1-mesa-glx
