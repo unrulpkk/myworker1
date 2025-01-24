@@ -15,7 +15,7 @@ ENV CUDA_HOME=/usr/local/cuda
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 # Install Python, git and other necessary tools
 RUN apt-get update && apt-get install -y \
-    python3.12.8 \
+    python3.12 \
     python3-pip \
     git \
     wget
