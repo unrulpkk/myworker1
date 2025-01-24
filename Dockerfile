@@ -1,6 +1,6 @@
 # Use Nvidia CUDA base image
 FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04 AS base
-RUN nvcc --version
+RUN apt-get update && apt-get install -y cuda-nvcc-12-4
 #FROM nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04 as base
 # Install libGL.so.1
 # Prevents prompts from packages asking for user input during installation
