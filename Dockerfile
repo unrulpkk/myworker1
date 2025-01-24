@@ -1,6 +1,6 @@
 # Use Nvidia CUDA base image
-# FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04 AS base
-FROM nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04 as base
+FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04 AS base
+#FROM nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04 as base
 # Install libGL.so.1
 ENV NCCL_DEBUG=INFO
 ENV NCCL_DEBUG_SUBSYS=ALL
@@ -15,7 +15,7 @@ ENV CUDA_HOME=/usr/local/cuda
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 # Install Python, git and other necessary tools
 RUN apt-get update && apt-get install -y \
-    python3.10 \
+    python3.12.8 \
     python3-pip \
     git \
     wget
@@ -29,24 +29,25 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git /comfyui
 # Change working directory to ComfyUI
 WORKDIR /comfyui
 
+# Install ComfyUI dependencies
+RUN pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124 \
+    && pip install -r requirements.txt
+    
 RUN git clone https://github.com/zhilengjun/ComfyUI-FunAudioLLM_V2.git custom_nodes/ComfyUI-FunAudioLLM_V2
 
 RUN git clone https://github.com/WASasquatch/was-node-suite-comfyui.git custom_nodes/was-node-suite-comfyui
 
 WORKDIR /comfyui/custom_nodes/ComfyUI-FunAudioLLM_V2
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 WORKDIR /comfyui/custom_nodes/was-node-suite-comfyui
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 WORKDIR /comfyui
 
-# Install ComfyUI dependencies
-RUN pip3 install --no-cache-dir torch==2.4.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 \
-    && pip3 install --no-cache-dir xformers==0.0.21 \
-    && pip3 install -r requirements.txt
+
 
 # Install runpod
-RUN pip3 install runpod requests
+RUN pip install runpod requests
 # RUN git clone https://github.com/zhilengjun/ComfyUI-FunAudioLLM_V2.git custom_nodes/ComfyUI-FunAudioLLM_V2
 
 # RUN git clone https://github.com/WASasquatch/was-node-suite-comfyui.git custom_nodes/was-node-suite-comfyui
