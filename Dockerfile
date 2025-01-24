@@ -47,14 +47,14 @@ RUN pip3 install --no-cache-dir torch torchvision torchaudio --index-url https:/
 
 # Install runpod
 RUN pip3 install runpod requests
-RUN git clone https://github.com/zhilengjun/ComfyUI-FunAudioLLM_V2.git custom_nodes/ComfyUI-FunAudioLLM_V2
+# RUN git clone https://github.com/zhilengjun/ComfyUI-FunAudioLLM_V2.git custom_nodes/ComfyUI-FunAudioLLM_V2
 
-RUN git clone https://github.com/WASasquatch/was-node-suite-comfyui.git custom_nodes/was-node-suite-comfyui
+# RUN git clone https://github.com/WASasquatch/was-node-suite-comfyui.git custom_nodes/was-node-suite-comfyui
 
-WORKDIR /comfyui/custom_nodes/ComfyUI-FunAudioLLM_V2
-RUN pip install --no-cache-dir -r requirements.txt
-WORKDIR /comfyui/custom_nodes/was-node-suite-comfyui
-RUN pip install --no-cache-dir -r requirements.txt
+# WORKDIR /comfyui/custom_nodes/ComfyUI-FunAudioLLM_V2
+# RUN pip install --no-cache-dir -r requirements.txt
+# WORKDIR /comfyui/custom_nodes/was-node-suite-comfyui
+# RUN pip install --no-cache-dir -r requirements.txt
 
 WORKDIR /comfyui
 # 安装 git-lfs
