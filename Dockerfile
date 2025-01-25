@@ -33,6 +33,7 @@ WORKDIR /comfyui
 RUN pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124 \
     && pip install -r requirements.txt
     
+RUN git clone https://github.com/WASasquatch/was-node-suite-comfyui.git custom_nodes/was-node-suite-comfyui    
 WORKDIR /comfyui/custom_nodes/was-node-suite-comfyui
 RUN pip install -r requirements.txt
 WORKDIR /comfyui/custom_nodes/
