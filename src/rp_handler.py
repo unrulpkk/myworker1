@@ -351,7 +351,7 @@ def base64_encode(img_path):
         return f"{encoded_string}"
 
 
-def process_output_images(outputs, job_id):
+def process_output_result(outputs, job_id):
     """
     This function takes the "outputs" from image generation and the job ID,
     then determines the correct way to return the image, either as a direct URL
@@ -379,49 +379,69 @@ def process_output_images(outputs, job_id):
     - If the image file does not exist in the output folder, it returns an error status
       with a message indicating the missing image file.
     """
+    # 如果 outputs 为空，直接返回错误信息
+    if not outputs:
+        return {
+            "status": "error",
+            "message": "outputs 为空，没有文件需要处理。"
+        }
 
+    # 获取 outputs.items() 的第一个元素
+    node_id, node_output = next(iter(outputs.items()))
+
+    # 检查是否有文件信息
+    file_info_list = None
+    if node_output:
+        # 假设文件信息总是在 node_output 的第一个键对应的值中
+        first_key = next(iter(node_output))
+        file_info_list = node_output[first_key]
+
+    if not file_info_list:
+        return {
+            "status": "error",
+            "message": "未找到可处理的文件信息。"
+        }
+
+    # 获取第一个文件信息
+    file_info = file_info_list[0]
+    filename = file_info["filename"]
+    subfolder = file_info["subfolder"]
     # The path where ComfyUI stores the generated images
     COMFY_OUTPUT_PATH = os.environ.get("COMFY_OUTPUT_PATH", "/comfyui/output")
-
-    output_images = {}
-
-    for node_id, node_output in outputs.items():
-        if "images" in node_output:
-            for image in node_output["images"]:
-                output_images = os.path.join(image["subfolder"], image["filename"])
-
-    print(f"runpod-worker-comfy - image generation is done")
-
     # expected image output folder
-    local_image_path = f"{COMFY_OUTPUT_PATH}/{output_images}"
+    local_file_path = os.path.join(COMFY_OUTPUT_PATH, subfolder, filename)
 
-    print(f"runpod-worker-comfy - {local_image_path}")
+    # 检查文件是否存在
+    if not os.path.exists(local_file_path):
+        return {
+            "status": "error",
+            "message": f"文件 {local_file_path} 不存在。"
+        }
 
     # The image is in the output folder
-    if os.path.exists(local_image_path):
-        if os.environ.get("BUCKET_ENDPOINT_URL", True):
-            oss_file_path = f"{job_id}/{output_image}"
+    if os.path.exists(local_file_path):
+        if os.environ.get("BUCKET_ENDPOINT_URL", False):
             # URL to image in AWS S3
-            image = upload_to_aliyun(local_image_path, oss_file_path)
+            file_context = upload_to_aliyun(local_file_path, job_id)
             print(
                 "runpod-worker-comfy - the image was generated and uploaded to AWS S3"
             )
         else:
             # base64 image
-            image = base64_encode(local_image_path)
+            file_context = upload_to_aliyun(local_file_path, job_id)
             print(
-                "runpod-worker-comfy - the image was generated and converted to base64"
+                "runpod-worker-comfy - the image was generated and uploaded to AWS S3"
             )
 
         return {
             "status": "success",
-            "message": image,
+            "message": file_context,
         }
     else:
         print("runpod-worker-comfy - the image does not exist in the output folder")
         return {
             "status": "error",
-            "message": f"the image does not exist in the specified output folder: {local_image_path}",
+            "message": f"the image does not exist in the specified output folder: {local_file_path}",
         }
 
 
@@ -494,7 +514,7 @@ def handler(job):
         return {"error": f"Error waiting for image generation: {str(e)}"}
 
     # Get the generated image and return it as URL in an AWS bucket or as base64
-    images_result = process_output_images(history[prompt_id].get("outputs"), job["id"])
+    images_result = process_output_result(history[prompt_id].get("outputs"), job["id"])
 
     result = {**images_result, "refresh_worker": REFRESH_WORKER}
 
