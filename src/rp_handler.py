@@ -86,18 +86,9 @@ def validate_input(job_input):
         return None, "Missing 'workflow' parameter"
 
     # Validate 'images' in input, if provided
-    images = job_input.get("images")
-    if images is not None:
-        if not isinstance(images, list) or not all(
-            "name" in image and "image" in image for image in images
-        ):
-            return (
-                None,
-                "'images' must be a list of objects with 'name' and 'image' keys",
-            )
-
+    urls = job_input.get("urls")
     # Return validated data and no error
-    return {"workflow": workflow, "images": images}, None
+    return {"workflow": workflow, "urls": urls}, None
 
 
 def check_server(url, retries=500, delay=50):
@@ -323,19 +314,10 @@ def process_output_result(outputs, job_id):
 
     # The image is in the output folder
     if os.path.exists(local_file_path):
-        if os.environ.get("BUCKET_ENDPOINT_URL", False):
-            # URL to image in AWS S3
-            file_context = upload_to_aliyun(local_file_path, job_id)
-            print(
+        file_context = upload_to_aliyun(local_file_path, job_id)
+        print(
                 "runpod-worker-comfy - the image was generated and uploaded to AWS S3"
-            )
-        else:
-            # base64 image
-            file_context = upload_to_aliyun(local_file_path, job_id)
-            print(
-                "runpod-worker-comfy - the image was generated and uploaded to AWS S3"
-            )
-
+        )       
         return {
             "status": "success",
             "message": file_context,
@@ -381,7 +363,7 @@ def handler(job):
     )
 
     # Upload images if they exist
-    upload_result = upload_images(images)
+    #upload_result = upload_images(images)
     download_file(urls);
     
     if upload_result["status"] == "error":
