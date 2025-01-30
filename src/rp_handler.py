@@ -125,12 +125,27 @@ def check_server(url, retries=500, delay=50):
     return False
 
 def download_file(urls):
-    for url in urls:
-        name = url["name"]
-        file_url = url["image"]
-        
-    return
+    download_path = "/comfyui/input"
+    if not os.path.exists(download_path):
+        os.makedirs(download_path)    
+    for url_info in urls:
+        try:
+            name = url_info["name"]
+            file_url = url_info["image"]
+            response = requests.get(file_url)
+            if response.status_code == 200:
+                file_path = os.path.join(download_path, name)
+                with open(file_path, 'wb') as file:
+                    file.write(response.content)
+                print(f"Downloaded {name} to {file_path}")
+            else:
+                print(f"Failed to download {name}: HTTP Status Code {response.status_code}")
+        except KeyError as e:
+            print(f"Failed to download due to missing key: {e}")
+        except Exception as e:
+            print(f"Failed to download {name}: {str(e)}")
 
+    return
 def upload_images(images):
     """
     Upload a list of base64 encoded images to the ComfyUI server using the /upload/image endpoint.
@@ -346,7 +361,8 @@ def handler(job):
 
     # Extract validated data
     workflow = validated_data["workflow"]
-    images = validated_data.get("images")
+    #images = validated_data.get("images")
+    urls=validated_data.get("urls")
 
     # Make sure that the ComfyUI API is available
     check_server(
@@ -357,6 +373,7 @@ def handler(job):
 
     # Upload images if they exist
     upload_result = upload_images(images)
+    download_file(urls);
     
     if upload_result["status"] == "error":
         return upload_result
