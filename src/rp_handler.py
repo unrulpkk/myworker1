@@ -131,7 +131,7 @@ def download_file(urls):
     for url_info in urls:
         try:
             name = url_info["name"]
-            file_url = url_info["image"]
+            file_url = url_info["url"]
             response = requests.get(file_url)
             if response.status_code == 200:
                 file_path = os.path.join(download_path, name)
@@ -365,10 +365,6 @@ def handler(job):
     # Upload images if they exist
     #upload_result = upload_images(images)
     download_file(urls);
-    
-    if upload_result["status"] == "error":
-        return upload_result
-
     # Queue the workflow
     try:
         queued_workflow = queue_workflow(workflow)
