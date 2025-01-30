@@ -24,31 +24,40 @@ COMFY_HOST = "127.0.0.1:8188"
 # see https://docs.runpod.io/docs/handler-additional-controls#refresh-worker
 REFRESH_WORKER = os.environ.get("REFRESH_WORKER", "false").lower() == "true"
 
+# 获取阿里云相关环境变量
+ALIYUN_ACCESS_KEY_ID = os.environ.get('ALIYUN_ACCESS_KEY_ID')
+ALIYUN_ACCESS_KEY_SECRET = os.environ.get('ALIYUN_ACCESS_KEY_SECRET')
+ALIYUN_ENDPOINT = os.environ.get('ALIYUN_ENDPOINT')
+ALIYUN_BUCKET_NAME = os.environ.get('ALIYUN_BUCKET_NAME')
+# 检查环境变量是否存在
+if not all([ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET, ALIYUN_ENDPOINT, ALIYUN_BUCKET_NAME]):
+    raise ValueError("Missing required environment variables for Aliyun OSS")
+
 # 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
-auth = oss2.Auth('LTAI5tJL5BUjYHHyKKmiRhyG', 'oH0ERlPRmajEucU5OhBleOwCsFFhoe')
+auth = oss2.Auth(ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET)
 # Endpoint以杭州为例，其它Region请按实际情况填写。
-bucket = oss2.Bucket(auth, 'http://oss-cn-hangzhou.aliyuncs.com', 'comfyuiyihuan')
+bucket = oss2.Bucket(auth, ALIYUN_ENDPOINT, ALIYUN_BUCKET_NAME)
 
 def upload_to_aliyun(local_file_path, oss_file_path):
     """
     上传文件到阿里云OSS
     :param local_file_path: 本地文件路径
     :param oss_file_path: OSS目标文件路径
-    :return: 上传成功返回True，失败返回False
+    :return: 上传成功返回文件的完整OSS路径，失败返回None
     """
     try:
         result = bucket.put_object_from_file(oss_file_path, local_file_path)
         # HTTP返回码。
         if result.status == 200:
             print(f"文件 {local_file_path} 成功上传到 {oss_file_path}")
-            return True
+            # 返回完整的OSS路径
+            return f"{bucket.bucket_name}.{bucket.endpoint.replace('http://', '')}/{oss_file_path}"
         else:
             print(f"文件上传失败，HTTP状态码: {result.status}")
-            return False
+            return None
     except Exception as e:
         print(f"上传过程中出现错误: {e}")
-        return False
-
+        return None
 def validate_input(job_input):
     """
     Validates the input for the handler function.
