@@ -90,30 +90,6 @@ def validate_input(job_input):
     # Return validated data and no error
     return {"workflow": workflow, "images": images}, None
 
-def validate_input(input_data):
-    if "workflow" not in input_data:
-        return None, "Missing 'workflow' parameter"
-
-    images = input_data.get("images", [])
-    audios = input_data.get("audios", [])
-    videos = input_data.get("videos", [])
-
-    # 验证 images 字段
-    for image in images:
-        if "name" not in image or "image" not in image:
-            return None, "Invalid 'images' field"
-
-    # 验证 audios 字段
-    for audio in audios:
-        if "name" not in audio or "audio" not in audio:
-            return None, "Invalid 'audios' field"
-
-    # 验证 videos 字段
-    for video in videos:
-        if "name" not in video or "video" not in video:
-            return None, "Invalid 'videos' field"
-
-    return input_data, None
 
 def check_server(url, retries=500, delay=50):
     """
@@ -148,6 +124,12 @@ def check_server(url, retries=500, delay=50):
     )
     return False
 
+def download_file(urls):
+    for url in urls:
+        name = url["name"]
+        file_url = url["image"]
+        
+    return
 
 def upload_images(images):
     """
@@ -198,109 +180,6 @@ def upload_images(images):
     return {
         "status": "success",
         "message": "All images uploaded successfully",
-        "details": responses,
-    }
-
-
-def upload_audios(audios):
-    """
-    Upload a list of base64 encoded audios to the ComfyUI server using the /upload/audio endpoint.
-
-    Args:
-        audios (list): A list of dictionaries, each containing the 'name' of the audio and the 'audio' as a base64 encoded string.
-
-    Returns:
-        list: A list of responses from the server for each audio upload.
-    """
-    if not audios:
-        return {"status": "success", "message": "No audios to upload", "details": []}
-
-    responses = []
-    upload_errors = []
-
-    print(f"runpod-worker-comfy - audio(s) upload")
-
-    for audio in audios:
-        name = audio["name"]
-        audio_data = audio["audio"]
-        blob = base64.b64decode(audio_data)
-
-        # Prepare the form data
-        files = {
-            "audio": (name, BytesIO(blob), "audio/mp3"),  # 根据实际音频类型修改
-            "overwrite": (None, "true"),
-        }
-
-        # POST request to upload the audio
-        response = requests.post(f"http://{COMFY_HOST}/upload/audio", files=files)
-        if response.status_code != 200:
-            upload_errors.append(f"Error uploading {name}: {response.text}")
-        else:
-            responses.append(f"Successfully uploaded {name}")
-
-    if upload_errors:
-        print(f"runpod-worker-comfy - audio(s) upload with errors")
-        return {
-            "status": "error",
-            "message": "Some audios failed to upload",
-            "details": upload_errors,
-        }
-
-    print(f"runpod-worker-comfy - audio(s) upload complete")
-    return {
-        "status": "success",
-        "message": "All audios uploaded successfully",
-        "details": responses,
-    }
-
-def upload_videos(videos):
-    """
-    Upload a list of base64 encoded videos to the ComfyUI server using the /upload/video endpoint.
-
-    Args:
-        videos (list): A list of dictionaries, each containing the 'name' of the video and the 'video' as a base64 encoded string.
-
-    Returns:
-        list: A list of responses from the server for each video upload.
-    """
-    if not videos:
-        return {"status": "success", "message": "No videos to upload", "details": []}
-
-    responses = []
-    upload_errors = []
-
-    print(f"runpod-worker-comfy - video(s) upload")
-
-    for video in videos:
-        name = video["name"]
-        video_data = video["video"]
-        blob = base64.b64decode(video_data)
-
-        # Prepare the form data
-        files = {
-            "video": (name, BytesIO(blob), "video/mp4"),  # 根据实际视频类型修改
-            "overwrite": (None, "true"),
-        }
-
-        # POST request to upload the video
-        response = requests.post(f"http://{COMFY_HOST}/upload/video", files=files)
-        if response.status_code != 200:
-            upload_errors.append(f"Error uploading {name}: {response.text}")
-        else:
-            responses.append(f"Successfully uploaded {name}")
-
-    if upload_errors:
-        print(f"runpod-worker-comfy - video(s) upload with errors")
-        return {
-            "status": "error",
-            "message": "Some videos failed to upload",
-            "details": upload_errors,
-        }
-
-    print(f"runpod-worker-comfy - video(s) upload complete")
-    return {
-        "status": "success",
-        "message": "All videos uploaded successfully",
         "details": responses,
     }
 
@@ -468,8 +347,6 @@ def handler(job):
     # Extract validated data
     workflow = validated_data["workflow"]
     images = validated_data.get("images")
-    audios = validated_data.get("audios", [])
-    videos = validated_data.get("videos", [])
 
     # Make sure that the ComfyUI API is available
     check_server(
@@ -480,8 +357,6 @@ def handler(job):
 
     # Upload images if they exist
     upload_result = upload_images(images)
-    audio_upload_result = upload_audios(audios)
-    video_upload_result = upload_videos(videos)
     
     if upload_result["status"] == "error":
         return upload_result
