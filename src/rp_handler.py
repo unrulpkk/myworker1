@@ -42,16 +42,21 @@ def upload_to_aliyun(local_file_path, oss_file_path):
     """
     上传文件到阿里云OSS
     :param local_file_path: 本地文件路径
-    :param oss_file_path: OSS目标文件路径
+    :param oss_file_path: OSS目标文件路径，会根据本地文件后缀进行调整
     :return: 上传成功返回文件的完整OSS路径，失败返回None
     """
+    # 获取本地文件的后缀
+    file_extension = os.path.splitext(local_file_path)[1]
+    # 调整OSS目标文件路径的后缀
+    oss_file_path_with_extension = f"{oss_file_path}{file_extension}"
+    
     try:
-        result = bucket.put_object_from_file(oss_file_path, local_file_path)
+        result = bucket.put_object_from_file(oss_file_path_with_extension, local_file_path)
         # HTTP返回码。
         if result.status == 200:
-            print(f"文件 {local_file_path} 成功上传到 {oss_file_path}")
+            print(f"文件 {local_file_path} 成功上传到 {oss_file_path_with_extension}")
             # 返回完整的OSS路径
-            return f"{bucket.bucket_name}.{bucket.endpoint.replace('http://', '')}/{oss_file_path}"
+            return f"{bucket.bucket_name}.{bucket.endpoint.replace('http://', '')}/{oss_file_path_with_extension}"
         else:
             print(f"文件上传失败，HTTP状态码: {result.status}")
             return None
@@ -314,7 +319,9 @@ def process_output_result(outputs, job_id):
 
     # The image is in the output folder
     if os.path.exists(local_file_path):
-        file_context = upload_to_aliyun(local_file_path, job_id)
+        # 使用 job_id 作为 OSS 文件路径的一部分，确保唯一性
+        oss_file_path = f"{job_id}/{filename}"
+        file_context = upload_to_aliyun(local_file_path, oss_file_path)
         print(
                 "runpod-worker-comfy - the image was generated and uploaded to AWS S3"
         )       
