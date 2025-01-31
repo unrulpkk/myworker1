@@ -251,33 +251,6 @@ def base64_encode(img_path):
 
 
 def process_output_result(outputs, job_id):
-    """
-    This function takes the "outputs" from image generation and the job ID,
-    then determines the correct way to return the image, either as a direct URL
-    to an AWS S3 bucket or as a base64 encoded string, depending on the
-    environment configuration.
-
-    Args:
-        outputs (dict): A dictionary containing the outputs from image generation,
-                        typically includes node IDs and their respective output data.
-        job_id (str): The unique identifier for the job.
-
-    Returns:
-        dict: A dictionary with the status ('success' or 'error') and the message,
-              which is either the URL to the image in the AWS S3 bucket or a base64
-              encoded string of the image. In case of error, the message details the issue.
-
-    The function works as follows:
-    - It first determines the output path for the images from an environment variable,
-      defaulting to "/comfyui/output" if not set.
-    - It then iterates through the outputs to find the filenames of the generated images.
-    - After confirming the existence of the image in the output folder, it checks if the
-      AWS S3 bucket is configured via the BUCKET_ENDPOINT_URL environment variable.
-    - If AWS S3 is configured, it uploads the image to the bucket and returns the URL.
-    - If AWS S3 is not configured, it encodes the image in base64 and returns the string.
-    - If the image file does not exist in the output folder, it returns an error status
-      with a message indicating the missing image file.
-    """
     # 如果 outputs 为空，直接返回错误信息
     if not outputs:
         return {
