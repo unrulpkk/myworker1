@@ -56,7 +56,7 @@ def upload_to_aliyun(local_file_path, job_id):
         end_time = time.time()  # 记录结束时间
         elapsed_time = end_time - start_time  # 计算耗时        
         if result.status == 200:
-            logging.info(f"文件 {local_file_path} 成功上传到阿里云，耗时: {elapsed_time} 秒")        
+            print(f"成功上传到阿里云，耗时{elapsed_time}")       
             # 返回https的完整OSS路径
             return f"https://{ALIYUN_BUCKET_NAME}.{ALIYUN_ENDPOINT}/{oss_file_path}"
         else:
@@ -147,13 +147,13 @@ def download_file(urls):
                 file_path = os.path.join(download_path, name)
                 with open(file_path, 'wb') as file:
                     file.write(response.content)
-                logging.info(f"Downloaded {name} to {file_path}，耗时: {elapsed_time} 秒")
+                print(f"成功下载文件，耗时{elapsed_time}") 
             else:
-                logging.error(f"Failed to download {name}: HTTP Status Code {response.status_code}，耗时: {elapsed_time} 秒")
+                print(f"Failed to download {name}: HTTP Status Code {response.status_code}")
         except KeyError as e:
-            logging.error(f"Failed to download due to missing key: {e}")
+            print(f"Failed to download due to missing key: {e}")
         except Exception as e:
-            logging.error(f"Failed to download {name}: {str(e)}")
+            print(f"Failed to download {name}: {str(e)}")
 
     return
 def upload_images(images):
