@@ -38,30 +38,31 @@ auth = oss2.Auth(ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET)
 # Endpoint以杭州为例，其它Region请按实际情况填写。
 bucket = oss2.Bucket(auth, ALIYUN_ENDPOINT, ALIYUN_BUCKET_NAME)
 
-def upload_to_aliyun(local_file_path, oss_file_path):
+def upload_to_aliyun(local_file_path, job_id):
     """
     上传文件到阿里云OSS
     :param local_file_path: 本地文件路径
-    :param oss_file_path: OSS目标文件路径，会根据本地文件后缀进行调整
+    :param job_id: job的ID，用于生成OSS目标文件路径
     :return: 上传成功返回文件的完整OSS路径，失败返回None
     """
-    # 获取本地文件的后缀
-    file_extension = os.path.splitext(local_file_path)[1]
-    # 调整OSS目标文件路径的后缀
-    oss_file_path_with_extension = f"{oss_file_path}{file_extension}"
-    
     try:
-        result = bucket.put_object_from_file(oss_file_path_with_extension, local_file_path)
-        # HTTP返回码。
+        # 获取文件后缀
+        file_extension = os.path.splitext(local_file_path)[1]
+        # 生成OSS目标文件路径
+        oss_file_path = f"{job_id}{file_extension}"
+        start_time = time.time()  # 记录开始时间        
+        # 上传文件
+        result = bucket.put_object_from_file(oss_file_path, local_file_path)
+        end_time = time.time()  # 记录结束时间
+        elapsed_time = end_time - start_time  # 计算耗时        
         if result.status == 200:
-            print(f"文件 {local_file_path} 成功上传到 {oss_file_path_with_extension}")
-            # 返回完整的OSS路径
-            return f"{bucket.bucket_name}.{bucket.endpoint.replace('http://', '')}/{oss_file_path_with_extension}"
+            logging.info(f"文件 {local_file_path} 成功上传到阿里云，耗时: {elapsed_time} 秒")        
+            # 返回https的完整OSS路径
+            return f"https://{ALIYUN_BUCKET_NAME}.{ALIYUN_ENDPOINT}/{oss_file_path}"
         else:
-            print(f"文件上传失败，HTTP状态码: {result.status}")
             return None
     except Exception as e:
-        print(f"上传过程中出现错误: {e}")
+        print(f"上传文件到阿里云OSS失败: {e}")
         return None
 def validate_input(job_input):
     """
@@ -137,18 +138,22 @@ def download_file(urls):
         try:
             name = url_info["name"]
             file_url = url_info["url"]
+            start_time = time.time()  # 记录开始时间
             response = requests.get(file_url)
+            end_time = time.time()  # 记录结束时间
+            elapsed_time = end_time - start_time  # 计算耗时
+
             if response.status_code == 200:
                 file_path = os.path.join(download_path, name)
                 with open(file_path, 'wb') as file:
                     file.write(response.content)
-                print(f"Downloaded {name} to {file_path}")
+                logging.info(f"Downloaded {name} to {file_path}，耗时: {elapsed_time} 秒")
             else:
-                print(f"Failed to download {name}: HTTP Status Code {response.status_code}")
+                logging.error(f"Failed to download {name}: HTTP Status Code {response.status_code}，耗时: {elapsed_time} 秒")
         except KeyError as e:
-            print(f"Failed to download due to missing key: {e}")
+            logging.error(f"Failed to download due to missing key: {e}")
         except Exception as e:
-            print(f"Failed to download {name}: {str(e)}")
+            logging.error(f"Failed to download {name}: {str(e)}")
 
     return
 def upload_images(images):
