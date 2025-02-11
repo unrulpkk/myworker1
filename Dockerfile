@@ -38,10 +38,8 @@ RUN git clone https://github.com/WASasquatch/was-node-suite-comfyui.git custom_n
 WORKDIR /comfyui/custom_nodes/was-node-suite-comfyui
 RUN pip install -r requirements.txt
 WORKDIR /comfyui/custom_nodes/
-RUN wget https://comfyuiyihuan.oss-cn-hangzhou.aliyuncs.com/ComfyUI-FunAudioLLM_V2.zip
-RUN apt install unzip
-RUN unzip ComfyUI-FunAudioLLM_V2.zip
-WORKDIR /comfyui/custom_nodes/ComfyUI-FunAudioLLM_V2
+RUN git clone https://gitee.com/fengshaochen/comfy-ui-fun-audio-llm_-v3.git
+WORKDIR /comfyui/custom_nodes/comfy-ui-fun-audio-llm_-v3
 RUN pip install -r requirements.txt
 
 WORKDIR /comfyui
