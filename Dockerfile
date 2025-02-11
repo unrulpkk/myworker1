@@ -22,8 +22,7 @@ RUN apt-get update && apt-get install -y \
     wget
 # Clean up to reduce image size
 # RUN apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
-RUN apt-get update && apt-get install -y libgl1-mesa-glx
-RUN apt install ffmpeg
+RUN apt-get update && apt-get install -y libgl1-mesa-glx && apt-get install -y ffmpeg
 # Clone ComfyUI repository
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git /comfyui
 
