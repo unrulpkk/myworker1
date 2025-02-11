@@ -37,7 +37,7 @@ RUN git clone https://github.com/WASasquatch/was-node-suite-comfyui.git custom_n
 WORKDIR /comfyui/custom_nodes/was-node-suite-comfyui
 RUN pip install -r requirements.txt
 WORKDIR /comfyui/custom_nodes/
-RUN git clone https://gitee.com/fengshaochen/comfyuifunaudiollmv3.git
+RUN git clone https://github.com/unrulpkk/comfyuifunaudiollmv3.git
 WORKDIR /comfyui/custom_nodes/comfyuifunaudiollmv3
 RUN pip install -r requirements.txt
 
