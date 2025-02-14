@@ -38,7 +38,7 @@ auth = oss2.Auth(ALIYUN_ACCESS_KEY_ID, ALIYUN_ACCESS_KEY_SECRET)
 # Endpoint以杭州为例，其它Region请按实际情况填写。
 bucket = oss2.Bucket(auth, ALIYUN_ENDPOINT, ALIYUN_BUCKET_NAME)
 
-def upload_to_aliyun(local_file_path, job_id):
+def upload_to_aliyun(local_file_path, oss_file_path):
     """
     上传文件到阿里云OSS
     :param local_file_path: 本地文件路径
@@ -47,9 +47,7 @@ def upload_to_aliyun(local_file_path, job_id):
     """
     try:
         # 获取文件后缀
-        file_extension = os.path.splitext(local_file_path)[1]
         # 生成OSS目标文件路径
-        oss_file_path = f"{job_id}{file_extension}"
         start_time = time.time()  # 记录开始时间        
         # 上传文件
         result = bucket.put_object_from_file(oss_file_path, local_file_path)
