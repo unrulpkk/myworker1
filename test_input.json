@@ -1,63 +1,79 @@
 {
   "input": {
     "workflow": {
-      "3": {
+      "10": {
         "inputs": {
-          "seed": 234234,
-          "steps": 20,
-          "cfg": 8,
-          "sampler_name": "euler",
-          "scheduler": "normal",
-          "denoise": 1,
-          "model": ["4", 0],
-          "positive": ["6", 0],
-          "negative": ["7", 0],
-          "latent_image": ["5", 0]
+          "audio": "bd3d3f9b-ce6c-435e-9555-13407f59d7e7.mp3"
         },
-        "class_type": "KSampler"
+        "class_type": "LoadAudio",
+        "_meta": {
+          "title": "加载音频"
+        }
       },
-      "4": {
+      "11": {
         "inputs": {
-          "ckpt_name": "sd_xl_base_1.0.safetensors"
+          "tts_text": "首先这个方案一套下来并不便宜，目测4090加主板CPU加高频DDR5 ECC内存",
+          "speed": 1,
+          "seed": 1221,
+          "text_frontend": true,
+          "polyreplace": false,
+          "prompt_text": "关于这部剧的烂，很多人都把矛头指向了王大主演，他固然是个天坑，但这部剧最大的问题是在于他把一个男频爽文拍成了古偶剧，把",
+          "instruct_text": "",
+          "prompt_wav": [
+            "10",
+            0
+          ]
         },
-        "class_type": "CheckpointLoaderSimple"
+        "class_type": "CosyVoice2ZeroShotNode",
+        "_meta": {
+          "title": "CosyVoice2 音色克隆"
+        }
       },
-      "5": {
+      "12": {
         "inputs": {
-          "width": 512,
-          "height": 512,
-          "batch_size": 1
+          "speaker_name": "speaker4444",
+          "spk_model": [
+            "11",
+            1
+          ]
         },
-        "class_type": "EmptyLatentImage"
+        "class_type": "CosyVoiceSaveSpeakerModelNode",
+        "_meta": {
+          "title": "CosyVoice 保存说话人模型"
+        }
       },
-      "6": {
+      "13": {
         "inputs": {
-          "text": "beautiful scenery nature glass bottle landscape, purple galaxy bottle,",
-          "clip": ["4", 1]
+          "filename_prefix": "audio/ComfyUI",
+          "audio": [
+            "11",
+            0
+          ]
         },
-        "class_type": "CLIPTextEncode"
-      },
-      "7": {
-        "inputs": {
-          "text": "text, watermark",
-          "clip": ["4", 1]
-        },
-        "class_type": "CLIPTextEncode"
-      },
-      "8": {
-        "inputs": {
-          "samples": ["3", 0],
-          "vae": ["4", 2]
-        },
-        "class_type": "VAEDecode"
-      },
-      "9": {
-        "inputs": {
-          "filename_prefix": "ComfyUI/test",
-          "images": ["8", 0]
-        },
-        "class_type": "SaveImage"
+        "class_type": "SaveAudio",
+        "_meta": {
+          "title": "保存音频"
+        }
       }
-    }
+    },
+    "urls": [
+        {
+            "url": "https://comfyuiyihuan.oss-cn-hangzhou.aliyuncs.com/bd3d3f9b-ce6c-435e-9555-13407f59d7e7.mp3",
+            "name": "bd3d3f9b-ce6c-435e-9555-13407f59d7e7.mp3",
+            "path":"/comfyui/input"
+        },
+        {
+          "url": "https://comfyuiyihuan.oss-cn-hangzhou.aliyuncs.com/31f9d662-61c7-4622-9864-dddd.pt",
+          "name": "31f9d662-61c7-4622-9864-dddd.pt",
+          "path":"/comfyui/models/CosyVoice/Speaker"
+        }
+    ],
+    "uploadFiles":[
+      {
+        "filename":"61g9d662-61c7-4622-9864-dddd.pt",
+        "path":"/comfyui/models/CosyVoice/Speaker",
+        "class_type":"CosyVoiceSaveSpeakerModelNode"
+      }
+    ]
   }
 }

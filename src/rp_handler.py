@@ -91,8 +91,9 @@ def validate_input(job_input):
 
     # Validate 'images' in input, if provided
     urls = job_input.get("urls")
+    uploadFiles = job_input.get("uploadFiles")
     # Return validated data and no error
-    return {"workflow": workflow, "urls": urls}, None
+    return {"workflow": workflow, "urls": urls,"uploadFiles":uploadFiles}, None
 
 
 def check_server(url, retries=500, delay=50):
@@ -128,14 +129,14 @@ def check_server(url, retries=500, delay=50):
     )
     return False
 
-def download_file(urls):
-    download_path = "/comfyui/input"
-    if not os.path.exists(download_path):
-        os.makedirs(download_path)    
+def download_file(urls):  
     for url_info in urls:
         try:
             name = url_info["name"]
             file_url = url_info["url"]
+            download_path=url_info["path"]
+            if not os.path.exists(download_path):
+                os.makedirs(download_path)             
             start_time = time.time()  # 记录开始时间
             response = requests.get(file_url)
             end_time = time.time()  # 记录结束时间
@@ -337,6 +338,7 @@ def handler(job):
     workflow = validated_data["workflow"]
     #images = validated_data.get("images")
     urls=validated_data.get("urls")
+    uploadFiles=validated_data.get("uploadFiles")
 
     # Make sure that the ComfyUI API is available
     check_server(
@@ -375,10 +377,29 @@ def handler(job):
     except Exception as e:
         return {"error": f"Error waiting for image generation: {str(e)}"}
 
-    # Get the generated image and return it as URL in an AWS bucket or as base64
-    images_result = process_output_result(history[prompt_id].get("outputs"), job["id"])
-
-    result = {**images_result, "refresh_worker": REFRESH_WORKER}
+    #生成的文件名称不固定，所有只能查询取到 
+    files_result = process_output_result(history[prompt_id].get("outputs"), job["id"])
+    upload_files_result = []
+    #生成的文件名和输入的名字一样，可以直接操作,后面建议直接runpod的网盘操作，减少时间
+    for file_info in uploadFiles:
+        filename = file_info["filename"]
+        path = file_info["path"]
+        class_type=file_info["class_type"]
+        # 构建本地文件路径
+        local_file_path = os.path.join(path, filename)
+        # 构建阿里云文件路径
+        oss_file_path = filename
+        # 调用上传函数
+        file_url = upload_to_aliyun(local_file_path, oss_file_path)
+        # 构建结果信息
+        result_info = {
+            "filename": filename,
+            "file_url": file_url,
+            "class_type":class_type
+        }
+        # 将结果信息添加到结果列表中
+        upload_files_result.append(result_info)
+    result = {**files_result, "refresh_worker": REFRESH_WORKER,"upload_files_result":upload_files_result}
 
     return result
 
