@@ -381,24 +381,25 @@ def handler(job):
     files_result = process_output_result(history[prompt_id].get("outputs"), job["id"])
     upload_files_result = []
     #生成的文件名和输入的名字一样，可以直接操作,后面建议直接runpod的网盘操作，减少时间
-    for file_info in uploadFiles:
-        filename = file_info["filename"]
-        path = file_info["path"]
-        class_type=file_info["class_type"]
-        # 构建本地文件路径
-        local_file_path = os.path.join(path, filename)
-        # 构建阿里云文件路径
-        oss_file_path = filename
-        # 调用上传函数
-        file_url = upload_to_aliyun(local_file_path, oss_file_path)
-        # 构建结果信息
-        result_info = {
-            "filename": filename,
-            "file_url": file_url,
-            "class_type":class_type
-        }
-        # 将结果信息添加到结果列表中
-        upload_files_result.append(result_info)
+    if uploadFiles:
+        for file_info in uploadFiles:
+            filename = file_info["filename"]
+            path = file_info["path"]
+            class_type=file_info["class_type"]
+            # 构建本地文件路径
+            local_file_path = os.path.join(path, filename)
+            # 构建阿里云文件路径
+            oss_file_path = filename
+            # 调用上传函数
+            file_url = upload_to_aliyun(local_file_path, oss_file_path)
+            # 构建结果信息
+            result_info = {
+                "filename": filename,
+                "file_url": file_url,
+                "class_type":class_type
+            }
+            # 将结果信息添加到结果列表中
+            upload_files_result.append(result_info)
     result = {**files_result, "refresh_worker": REFRESH_WORKER,"upload_files_result":upload_files_result}
 
     return result
