@@ -60,6 +60,7 @@ RUN pip install runpod requests
 WORKDIR /comfyui
 # 安装 git-lfs
 RUN apt-get update && \
+    apt-get install -y ttsfrd  && \
     apt-get install -y git-lfs && \
     git lfs install 
 RUN git clone https://huggingface.co/FunAudioLLM/CosyVoice2-0.5B.git  models/CosyVoice/CosyVoice2-0.5B
@@ -69,7 +70,6 @@ RUN wget https://comfyuiyihuan.oss-cn-hangzhou.aliyuncs.com/bd3d3f9b-ce6c-435e-9
 
 # Go back to the root
 WORKDIR /
-RUN apt-get update && apt-get install -y ttsfrd
 # Add the start and the handler
 ADD src/start.sh src/rp_handler.py ./
 RUN chmod +x /start.sh
