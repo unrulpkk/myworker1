@@ -29,7 +29,7 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git /comfyui
 # Change working directory to ComfyUI
 WORKDIR /comfyui
 
-# Install ComfyUI dependencies
+# Install ComfyUI 
 RUN pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124 \
     && pip install -r requirements.txt
     
