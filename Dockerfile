@@ -40,11 +40,7 @@ WORKDIR /comfyui/custom_nodes/
 RUN git clone https://github.com/unrulpkk/comfyuifunaudiollmv3.git
 WORKDIR /comfyui/custom_nodes/comfyuifunaudiollmv3
 RUN pip install -r requirements.txt
-
 WORKDIR /comfyui
-
-
-
 # Install runpod
 RUN pip install runpod requests
 # RUN git clone https://github.com/zhilengjun/ComfyUI-FunAudioLLM_V2.git custom_nodes/ComfyUI-FunAudioLLM_V2
