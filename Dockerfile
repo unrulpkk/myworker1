@@ -43,6 +43,12 @@ RUN pip install -r requirements.txt
 WORKDIR /comfyui
 # Install runpod
 RUN pip install runpod requests
+RUN pip install -U huggingface_hub
+RUN huggingface-cli download Comfy-Org/Wan_2.1_ComfyUI_repackaged split_files/diffusion_models/wan2.1_i2v_720p_14B_fp16.safetensors --local-dir /comfyUI/models/diffusion_models
+RUN huggingface-cli download Comfy-Org/Wan_2.1_ComfyUI_repackaged split_files/text_encoders/umt5_xxl_fp16.safetensors --local-dir /comfyUI/models/text_encoders
+RUN huggingface-cli download Comfy-Org/Wan_2.1_ComfyUI_repackaged split_files/clip_vision/clip_vision_h.safetensors --local-dir /comfyUI/models/clip_vision
+RUN huggingface-cli download Comfy-Org/Wan_2.1_ComfyUI_repackaged split_files/vae/wan_2.1_vae.safetensors --local-dir ~/comfyUI/models/vae
+
 # RUN git clone https://github.com/zhilengjun/ComfyUI-FunAudioLLM_V2.git custom_nodes/ComfyUI-FunAudioLLM_V2
 
 # RUN git clone https://github.com/WASasquatch/was-node-suite-comfyui.git custom_nodes/was-node-suite-comfyui
