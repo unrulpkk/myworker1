@@ -45,13 +45,13 @@ WORKDIR /comfyui
 RUN pip install runpod requests
 RUN pip install -U huggingface_hub
 RUN huggingface-cli download Comfy-Org/Wan_2.1_ComfyUI_repackaged split_files/vae/wan_2.1_vae.safetensors --local-dir /comfyUI/models/vae 
-RUN mv /comfyUI/models/vae/split_files/vae/wan_2.1_vae.safetensors  /comfyUI/models/vae/wan_2.1_vae.safetensors
+#RUN mv /comfyUI/models/vae/split_files/vae/wan_2.1_vae.safetensors  /comfyUI/models/vae/wan_2.1_vae.safetensors
 RUN huggingface-cli download Comfy-Org/Wan_2.1_ComfyUI_repackaged split_files/diffusion_models/wan2.1_i2v_720p_14B_fp16.safetensors --local-dir /comfyUI/models/diffusion_models 
-RUN mv /comfyUI/models/diffusion_models/split_files/diffusion_models/wan2.1_i2v_720p_14B_fp16.safetensors  /comfyUI/models/diffusion_models/wan2.1_i2v_720p_14B_fp16.safetensors
+#RUN mv /comfyUI/models/diffusion_models/split_files/diffusion_models/wan2.1_i2v_720p_14B_fp16.safetensors  /comfyUI/models/diffusion_models/wan2.1_i2v_720p_14B_fp16.safetensors
 RUN huggingface-cli download Comfy-Org/Wan_2.1_ComfyUI_repackaged split_files/text_encoders/umt5_xxl_fp16.safetensors --local-dir /comfyUI/models/text_encoders 
-RUN mv /comfyUI/models/text_encoders/split_files/text_encoders/umt5_xxl_fp16.safetensors  /comfyUI/models/text_encoders/umt5_xxl_fp16.safetensors
+#RUN mv /comfyUI/models/text_encoders/split_files/text_encoders/umt5_xxl_fp16.safetensors  /comfyUI/models/text_encoders/umt5_xxl_fp16.safetensors
 RUN huggingface-cli download Comfy-Org/Wan_2.1_ComfyUI_repackaged split_files/clip_vision/clip_vision_h.safetensors --local-dir /comfyUI/models/clip_vision 
-RUN mv /comfyUI/models/clip_vision/split_files/clip_vision/clip_vision_h.safetensors  /comfyUI/models/clip_vision/clip_vision_h.safetensors
+#RUN mv /comfyUI/models/clip_vision/split_files/clip_vision/clip_vision_h.safetensors  /comfyUI/models/clip_vision/clip_vision_h.safetensors
 
 # RUN git clone https://github.com/zhilengjun/ComfyUI-FunAudioLLM_V2.git custom_nodes/ComfyUI-FunAudioLLM_V2
 
